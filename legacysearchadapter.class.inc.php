@@ -33,23 +33,29 @@ class LegacySearchBlock
     protected $oFilter;
     /** @var CMDBObjectSet $oSet */
     protected $oSet;
+    /** @var array $aExtraParams */
+    protected $aExtraParams;
 
     /**
      * LegacySearchBlock constructor.
      *
      * @param DBSearch $oFilter
+     * @param array $aExtraParams
      */
-    public function __construct(DBSearch $oFilter)
+    public function __construct(DBSearch $oFilter, $aExtraParams = array())
     {
         $this->oFilter = $oFilter;
+        $this->aExtraParams = $aExtraParams;
     }
 
     /**
      * @param WebPage $oPage
      * @param $sId
-     * @param array $aExtraParams
+     *
+     * @throws CoreException
+     * @throws DictExceptionMissingString
      */
-    public function Display(WebPage $oPage, $sId, $aExtraParams = array())
+    public function Display(WebPage $oPage, $sId)
     {
         if($this->oSet === null)
         {
@@ -59,7 +65,7 @@ class LegacySearchBlock
         $oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'/itop-legacy-search-base/js/legacy-search.js');
         $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 
-        $sStyle = (isset($aExtraParams['open']) && ($aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
+        $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
         $sHtml = "<div id=\"ds_$sId\" class=\"$sStyle\">\n";
         $oPage->add_ready_script(
 <<<EOF
@@ -73,8 +79,8 @@ class LegacySearchBlock
 		});
 EOF
         );
-        $aExtraParams['currentId'] = $sId;
-        $sHtml .= static::GetSearchForm($oPage, $this->oSet, $aExtraParams);
+        $this->aExtraParams['currentId'] = $sId;
+        $sHtml .= static::GetSearchForm($oPage, $this->oSet, $this->aExtraParams);
         $sHtml .= "</div>\n";
         $sHtml .= "<div class=\"HRDrawer\"></div>\n";
         $sHtml .= "<div id=\"dh_$sId\" class=\"DrawerHandle\">".Dict::S('UI:SearchToggle')."</div>\n";
@@ -224,7 +230,7 @@ EOF
                         {
                             $sSelected = '';
                         }
-                        $sValue .= "<option value=\"$key\"$sSelected>$value</option>\n";
+                        $sValue .= "<option value=\"$key\" $sSelected >$value</option>\n";
                     }
                     $sValue .= "</select>\n";
                     $sHtml .= "<label>".MetaModel::GetFilterLabel($sClassName, $sFilterCode).":</label>&nbsp;$sValue\n";
