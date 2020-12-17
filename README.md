@@ -1,8 +1,8 @@
-# iTop module : Assign To Me
+# iTop module : API to use the legacy search box in the console
 
 ## About
 
-This extension adds a menu to directly assign any kind of ticket to the agent currently connected.
+All you new to know is in the title: API to use the legacy search box in the console :-)
 
 ## Download
 
