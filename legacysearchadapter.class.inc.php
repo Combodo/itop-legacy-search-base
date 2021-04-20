@@ -36,6 +36,17 @@ class LegacySearchBlock
     /** @var array $aExtraParams */
     protected $aExtraParams;
 
+	CONST XML_LEGACY_VERSION = '1.7';
+
+	/**
+	 * Compare static::XML_LEGACY_VERSION with ITOP_DESIGN_LATEST_VERSION and returns true if the later is <= to the former.
+	 * If static::XML_LEGACY_VERSION, return false
+	 * @return bool
+	 */
+	public static function UseLegacy(){
+		return static::XML_LEGACY_VERSION !== '' ? version_compare(ITOP_DESIGN_LATEST_VERSION, static::XML_LEGACY_VERSION, '<=') : false;
+	}
+	
     /**
      * LegacySearchBlock constructor.
      *
@@ -63,8 +74,15 @@ class LegacySearchBlock
         }
 
         $oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'/itop-legacy-search-base/js/legacy-search.js');
-        $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 
+	    $oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'/itop-legacy-search-base/js/legacy-search.js');
+	    if(static::UseLegacy()){
+		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/legacy/css/legacy-search.scss');
+	    }
+	    else{
+		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
+	    }
+	    
         $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
         $sHtml = "<div id=\"ds_$sId\" class=\"$sStyle\">\n";
         $oPage->add_ready_script(
@@ -251,7 +269,7 @@ EOF
             $sHtml .= '</div> ';
         }
         $sHtml .= "</div>\n";
-        $sHtml .= "<p align=\"right\"><input type=\"submit\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
+        $sHtml .= "<p align=\"right\"><input type=\"submit\" class=\"ibo-button ibo-is-regular ibo-is-primary\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
         if (isset($aExtraParams['table_id']))
         {
             // Rename to avoid collisions...
