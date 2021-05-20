@@ -41,7 +41,10 @@ class LegacySearchBlock
 	/**
 	 * Compare static::XML_LEGACY_VERSION with ITOP_DESIGN_LATEST_VERSION and returns true if the later is <= to the former.
 	 * If static::XML_LEGACY_VERSION, return false
+	 * 
 	 * @return bool
+	 *
+	 * @since 1.1.0
 	 */
 	public static function UseLegacy(){
 		return static::XML_LEGACY_VERSION !== '' ? version_compare(ITOP_DESIGN_LATEST_VERSION, static::XML_LEGACY_VERSION, '<=') : false;
