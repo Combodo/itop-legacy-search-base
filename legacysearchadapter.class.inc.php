@@ -263,7 +263,20 @@ EOF
                 $sTip = addslashes($sTip);
                 $sTip = str_replace(array("\n", "\r"), " ", $sTip);
                 // :input does represent in form visible input (INPUT, SELECT, TEXTAREA)
-                $oPage->add_ready_script("$('form#fs_$sSearchFormId :input[name={$sFilterCode}]').qtip( { content: '$sTip', show: 'mouseover', hide: 'mouseout', style: { name: 'dark', tip: 'leftTop' }, position: { corner: { target: 'rightMiddle', tooltip: 'leftTop' }} } );");
+	            if(self::UseLegacy()){
+                    $oPage->add_ready_script("$('form#fs_$sSearchFormId :input[name={$sFilterCode}]').qtip( { content: '$sTip', show: 'mouseover', hide: 'mouseout', style: { name: 'dark', tip: 'leftTop' }, position: { corner: { target: 'rightMiddle', tooltip: 'leftTop' }} } );");
+	            }
+				else{
+					$oPage->add_ready_script(
+						<<<JS
+							$('form#fs_$sSearchFormId :input[name={$sFilterCode}]')
+								.attr('data-tooltip-html-enabled', true)
+								.attr('data-tooltip-content', '$sTip');
+							CombodoTooltip.InitTooltipFromMarkup($('form#fs_$sSearchFormId :input[name={$sFilterCode}]'));
+
+JS
+					);
+				}
             }
             $index++;
             $sHtml .= '</div> ';
