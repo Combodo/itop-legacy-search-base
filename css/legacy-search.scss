@@ -51,7 +51,14 @@
 .SearchDrawer .SearchAttribute{
   > .field_input_zone{
     display: inline-block;
-
+    position: relative;
+    .field_input_btn{
+      display: inline-block;
+      height: 100%;
+      .ibo-input-select--action-button{
+        height: 100%;
+      }
+    }
     > .field_select_wrapper{
       display: inline-block;
     }
