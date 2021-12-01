@@ -85,8 +85,8 @@ class LegacySearchBlock
 	    else{
 		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 	    }
-	    
-        $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
+	    if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+	    $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
         $sHtml = "<div id=\"ds_$sId\" class=\"$sStyle\">\n";
         $oPage->add_ready_script(
 <<<EOF
@@ -97,7 +97,7 @@ class LegacySearchBlock
 			    /*FixSearchFormsDisposition();*/ 
 			    $("#dh_$sId").trigger('toggle_complete'); } );
 			$("#dh_$sId").toggleClass('open');
-		});
+	    		});
 EOF
         );
         $this->aExtraParams['currentId'] = $sId;
@@ -105,7 +105,22 @@ EOF
         $sHtml .= "</div>\n";
         $sHtml .= "<div class=\"HRDrawer\"></div>\n";
         $sHtml .= "<div id=\"dh_$sId\" class=\"DrawerHandle\">".Dict::S('UI:SearchToggle')."</div>\n";
+	    } else {
+        $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? ' ibo-is-opened' : '';
+        $sHtml = "<div id=\"ds_$sId\" class=\" ibo-panel ibo-content-block ibo-block ibo-search-form-panel display_block ibo-is-cyan ibo-is-opened $sStyle\">\n";
 
+        $oPage->add_ready_script(
+<<<EOF
+		$("#ds_$sId .ibo-panel--header").click( function() {
+			$("#ds_$sId").toggleClass('ibo-is-opened');
+		});
+EOF
+        );
+        $this->aExtraParams['currentId'] = $sId;
+        $sHtml .= static::GetSearchForm($oPage, $this->oSet, $this->aExtraParams);
+        $sHtml .= "</div>\n";
+        $sHtml .= "<div id=\"dh_$sId\" class=\"ibo-is-hidden\">".Dict::S('UI:SearchToggle')."</div>\n";
+}
         $oPage->add($sHtml);
     }
 
@@ -135,7 +150,7 @@ EOF
         }
         else
         {
-            $iSearchFormId = $oPage->GetUniqueId();
+            $iSearchFormId =  utils::GetUniqueId();
             $sSearchFormId = 'SimpleSearchForm'.$iSearchFormId;
             $sHtml .= "<div id=\"ds_$sSearchFormId\" class=\"mini_tab{$iSearchFormId}\">\n";
         }
@@ -168,11 +183,18 @@ EOF
         }
         $oUnlimitedFilter = new DBObjectSearch($sClassName);
         $sAction = (isset($aExtraParams['action'])) ? $aExtraParams['action'] : utils::GetAbsoluteUrlAppRoot().'pages/UI.php';
-        $sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
-        $sHtml .= "<h2>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</h2>\n";
         $index = 0;
-        $sHtml .= "<div>\n";
-        $aMapCriteria = array();
+        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+			$sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
+			$sHtml .= "<h2>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</h2>\n";
+
+        } else {
+			$sHtml .= "<div class='ibo-panel--header'><div class=''ibo-panel--titles'><div class='ibo-panel--title'>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</div></div></div>\n";
+			$sHtml .= "<div class='ibo-panel--body SearchDrawer'>\n";
+        	$sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
+	     }
+
+	    $aMapCriteria = array();
         $aList = MetaModel::GetZListItems($sClassName, 'standard_search');
         $aConsts = $oSet->ListConstantFields(); // Some fields are constants based on the query/context
         $sClassAlias = $oSet->GetFilter()->GetClassAlias();
@@ -216,7 +238,7 @@ EOF
                 $oSearch->SetModifierProperty('UserRightsGetSelectFilter', 'bSearchMode', true);
                 $oAllowedValues = new DBObjectSet($oSearch);
 
-                $sHtml .= "<label>".MetaModel::GetFilterLabel($sKeyAttClass, $sKeyAttCode).":</label>&nbsp;";
+                $sHtml .= "<label>".MetaModel::GetLabel($sKeyAttClass, $sKeyAttCode).":</label>&nbsp;";
                 $aExtKeyParams = $aExtraParams;
                 $aExtKeyParams['iFieldSize'] = $oKeyAttDef->GetMaxSize();
                 $aExtKeyParams['iMinChars'] = $oKeyAttDef->GetMinAutoCompleteChars();
@@ -224,11 +246,11 @@ EOF
             }
             else
             {
-                $aAllowedValues = MetaModel::GetAllowedValues_flt($sClassName, $sFilterCode, $aExtraParams);
+                $aAllowedValues = $oAttDef->GetAllowedValues();//MetaModel::GetAllowedValues_flt($sClassName, $sFilterCode, $aExtraParams);
                 if (is_null($aAllowedValues))
                 {
                     // Any value is possible, display an input box
-                    $sHtml .= "<label>".MetaModel::GetFilterLabel($sClassName, $sFilterCode).":</label>&nbsp;<input class=\"textSearch\" name=\"$sFilterCode\" value=\"".htmlentities($sFilterValue, ENT_QUOTES, 'utf-8')."\"/>\n";
+                    $sHtml .= "<label>".MetaModel::GetLabel($sClassName, $sFilterCode).":</label>&nbsp;<input class=\"textSearch\" name=\"$sFilterCode\" value=\"".htmlentities($sFilterValue, ENT_QUOTES, 'utf-8')."\"/>\n";
                 }
                 else
                 {
@@ -254,7 +276,7 @@ EOF
                         $sValue .= "<option value=\"$key\" $sSelected >$value</option>\n";
                     }
                     $sValue .= "</select>\n";
-                    $sHtml .= "<label>".MetaModel::GetFilterLabel($sClassName, $sFilterCode).":</label>&nbsp;$sValue\n";
+                    $sHtml .= "<label>".MetaModel::GetLabel($sClassName, $sFilterCode).":</label>&nbsp;$sValue\n";
                 }
             }
             unset($aExtraParams[$sFilterCode]);
@@ -284,8 +306,10 @@ JS
             $index++;
             $sHtml .= '</div> ';
         }
-        $sHtml .= "</div>\n";
-        $sHtml .= "<p align=\"right\"><input type=\"submit\" class=\"ibo-button ibo-is-regular ibo-is-primary\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
+        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
+         	$sHtml .= "</div>\n";
+         }
+          $sHtml .= "<p align=\"right\"><input type=\"submit\" class=\"ibo-button ibo-is-regular ibo-is-primary\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
         if (isset($aExtraParams['table_id']))
         {
             // Rename to avoid collisions...
@@ -304,6 +328,9 @@ JS
         $sHtml .= "<input type=\"hidden\" name=\"operation\" value=\"search_form\" />\n";
         $sHtml .= $oAppContext->GetForForm();
         $sHtml .= "</form>\n";
+        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
+			$sHtml .= "</div>\n";
+		}
         if (!isset($aExtraParams['currentId']))
         {
             $sHtml .= "</div><!-- Simple search form -->\n";

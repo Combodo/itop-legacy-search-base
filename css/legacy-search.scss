@@ -92,3 +92,20 @@
 div.HRDrawer {
 display: none;
 }
+
+.SearchAttribute button.ui-multiselect .fas {
+  float: right;
+  padding-left: 0px;
+  padding-right: 5px;
+}
+.field_input_extkey .field_input_btn{
+position: absolute;
+display: inline-flex !important;
+  right: 2px;
+}
+.field_select_wrapper{
+  display:inline-block;
+}
+.field_select_wrapper button.ui-multiselect{
+  padding-right: 25px !important;
+}
