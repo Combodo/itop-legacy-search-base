@@ -24,7 +24,7 @@
 
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'itop-legacy-search-base/1.1.3',
+	'itop-legacy-search-base/1.1.4',
 	array(
 		// Identification
 		//
