@@ -2,7 +2,7 @@
 
 ## About
 
-All you new to know is in the title: API to use the legacy search box in the console :-)
+All you need to know is in the title: API to use the legacy search box in the console :-)
 
 ## Download
 
