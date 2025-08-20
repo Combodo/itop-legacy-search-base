@@ -76,7 +76,7 @@ class LegacySearchBlock
             $this->oSet = new CMDBObjectSet($this->oFilter);
         }
 
-        $oPage->add_linked_script(utils::GetAbsoluteUrlModulesRoot().'/itop-legacy-search-base/js/legacy-search.js');
+        $oPage->LinkScriptFromAppRoot('/itop-legacy-search-base/js/legacy-search.js');
 
 	    if(static::UseLegacy()){
 		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/legacy/css/legacy-search.scss');
