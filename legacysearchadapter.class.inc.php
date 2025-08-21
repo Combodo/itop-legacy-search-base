@@ -36,20 +36,6 @@ class LegacySearchBlock
     /** @var array $aExtraParams */
     protected $aExtraParams;
 
-	CONST XML_LEGACY_VERSION = '1.7';
-
-	/**
-	 * Compare static::XML_LEGACY_VERSION with ITOP_DESIGN_LATEST_VERSION and returns true if the later is <= to the former.
-	 * If static::XML_LEGACY_VERSION, return false
-	 * 
-	 * @return bool
-	 *
-	 * @since 1.1.0
-	 */
-	public static function UseLegacy(){
-		return static::XML_LEGACY_VERSION !== '' ? version_compare(ITOP_DESIGN_LATEST_VERSION, static::XML_LEGACY_VERSION, '<=') : false;
-	}
-	
     /**
      * LegacySearchBlock constructor.
      *
@@ -77,34 +63,8 @@ class LegacySearchBlock
         }
 
         $oPage->LinkScriptFromAppRoot('/itop-legacy-search-base/js/legacy-search.js');
+	    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 
-	    if(static::UseLegacy()){
-		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/legacy/css/legacy-search.scss');
-	    }
-	    else{
-		    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
-	    }
-	    if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-	    $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? 'SearchDrawer' : 'SearchDrawer DrawerClosed';
-        $sHtml = "<div id=\"ds_$sId\" class=\"$sStyle\">\n";
-        $oPage->add_ready_script(
-<<<EOF
-		$("#dh_$sId").click( function() {
-			$("#ds_$sId").slideToggle('normal', function() { 
-			    $("#ds_$sId").parent().resize();
-			    /* Not part of the module */
-			    /*FixSearchFormsDisposition();*/ 
-			    $("#dh_$sId").trigger('toggle_complete'); } );
-			$("#dh_$sId").toggleClass('open');
-	    		});
-EOF
-        );
-        $this->aExtraParams['currentId'] = $sId;
-        $sHtml .= static::GetSearchForm($oPage, $this->oSet, $this->aExtraParams);
-        $sHtml .= "</div>\n";
-        $sHtml .= "<div class=\"HRDrawer\"></div>\n";
-        $sHtml .= "<div id=\"dh_$sId\" class=\"DrawerHandle\">".Dict::S('UI:SearchToggle')."</div>\n";
-	    } else {
         $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? ' ibo-is-opened' : '';
         $sHtml = "<div id=\"ds_$sId\" class=\" ibo-panel ibo-content-block ibo-block ibo-search-form-panel display_block ibo-is-cyan ibo-is-opened $sStyle\">\n";
 
@@ -119,7 +79,6 @@ EOF
         $sHtml .= static::GetSearchForm($oPage, $this->oSet, $this->aExtraParams);
         $sHtml .= "</div>\n";
         $sHtml .= "<div id=\"dh_$sId\" class=\"ibo-is-hidden\">".Dict::S('UI:SearchToggle')."</div>\n";
-}
         $oPage->add($sHtml);
     }
 
@@ -287,20 +246,17 @@ EOF
                 $sTip = addslashes($sTip);
                 $sTip = str_replace(array("\n", "\r"), " ", $sTip);
                 // :input does represent in form visible input (INPUT, SELECT, TEXTAREA)
-	            if(self::UseLegacy()){
-                    $oPage->add_ready_script("$('form#fs_$sSearchFormId :input[name={$sFilterCode}]').qtip( { content: '$sTip', show: 'mouseover', hide: 'mouseout', style: { name: 'dark', tip: 'leftTop' }, position: { corner: { target: 'rightMiddle', tooltip: 'leftTop' }} } );");
-	            }
-				else{
-					$oPage->add_ready_script(
-						<<<JS
-							$('form#fs_$sSearchFormId :input[name={$sFilterCode}]')
-								.attr('data-tooltip-html-enabled', true)
-								.attr('data-tooltip-content', '$sTip');
-							CombodoTooltip.InitTooltipFromMarkup($('form#fs_$sSearchFormId :input[name={$sFilterCode}]'));
+
+				$oPage->add_ready_script(
+					<<<JS
+						$('form#fs_$sSearchFormId :input[name={$sFilterCode}]')
+							.attr('data-tooltip-html-enabled', true)
+							.attr('data-tooltip-content', '$sTip');
+						CombodoTooltip.InitTooltipFromMarkup($('form#fs_$sSearchFormId :input[name={$sFilterCode}]'));
 
 JS
-					);
-				}
+				);
+
             }
             $index++;
             $sHtml .= '</div> ';
