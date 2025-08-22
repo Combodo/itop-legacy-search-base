@@ -142,15 +142,9 @@ EOF
         $oUnlimitedFilter = new DBObjectSearch($sClassName);
         $sAction = (isset($aExtraParams['action'])) ? $aExtraParams['action'] : utils::GetAbsoluteUrlAppRoot().'pages/UI.php';
         $index = 0;
-        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-			$sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
-			$sHtml .= "<h2>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</h2>\n";
-	        $sHtml .= "<div>\n";
-        } else {
-			$sHtml .= "<div class='ibo-panel--header'><div class=''ibo-panel--titles'><div class='ibo-panel--title'>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</div></div></div>\n";
-			$sHtml .= "<div class='ibo-panel--body SearchDrawer'>\n";
-        	$sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
-	     }
+		$sHtml .= "<div class='ibo-panel--header'><div class=''ibo-panel--titles'><div class='ibo-panel--title'>".Dict::Format('UI:SearchFor_Class_Objects', $sClassesCombo)."</div></div></div>\n";
+		$sHtml .= "<div class='ibo-panel--body SearchDrawer'>\n";
+        $sHtml .= "<form id=\"fs_{$sSearchFormId}\" action=\"{$sAction}\">\n"; // Don't use $_SERVER['SCRIPT_NAME'] since the form may be called asynchronously (from ajax.php)
 
 	    $aMapCriteria = array();
         $aList = MetaModel::GetZListItems($sClassName, 'standard_search');
@@ -261,10 +255,7 @@ JS
             $index++;
             $sHtml .= '</div> ';
         }
-        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') < 0) {
-         	$sHtml .= "</div>\n";
-         }
-          $sHtml .= "<p align=\"right\"><input type=\"submit\" class=\"ibo-button ibo-is-regular ibo-is-primary\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
+        $sHtml .= "<p align=\"right\"><input type=\"submit\" class=\"ibo-button ibo-is-regular ibo-is-primary\" value=\"".Dict::S('UI:Button:Search')."\"></p>\n";
         if (isset($aExtraParams['table_id']))
         {
             // Rename to avoid collisions...
@@ -283,9 +274,7 @@ JS
         $sHtml .= "<input type=\"hidden\" name=\"operation\" value=\"search_form\" />\n";
         $sHtml .= $oAppContext->GetForForm();
         $sHtml .= "</form>\n";
-        if (version_compare(ITOP_DESIGN_LATEST_VERSION , '3.0') >= 0) {
-			$sHtml .= "</div>\n";
-		}
+		$sHtml .= "</div>\n";
         if (!isset($aExtraParams['currentId']))
         {
             $sHtml .= "</div><!-- Simple search form -->\n";
