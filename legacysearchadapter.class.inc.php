@@ -62,7 +62,7 @@ class LegacySearchBlock
             $this->oSet = new CMDBObjectSet($this->oFilter);
         }
 
-        $oPage->LinkScriptFromAppRoot('/itop-legacy-search-base/js/legacy-search.js');
+        $oPage->LinkScriptFromModule('/itop-legacy-search-base/js/legacy-search.js');
 	    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 
         $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? ' ibo-is-opened' : '';
