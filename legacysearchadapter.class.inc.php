@@ -70,7 +70,7 @@ class LegacySearchBlock
 
         $oPage->add_ready_script(
 <<<EOF
-		$("#ds_$sId .ibo-panel--header").click( function() {
+		$("#ds_$sId .ibo-panel--header").on('click', function() {
 			$("#ds_$sId").toggleClass('ibo-is-opened');
 		});
 EOF
@@ -272,7 +272,11 @@ JS
         $sHtml .= "<input type=\"hidden\" name=\"class\" value=\"$sClassName\" />\n";
         $sHtml .= "<input type=\"hidden\" name=\"dosearch\" value=\"1\" />\n";
         $sHtml .= "<input type=\"hidden\" name=\"operation\" value=\"search_form\" />\n";
-        $sHtml .= $oAppContext->GetForForm();
+
+	    $sTransactionId = utils::GetNewTransactionId();
+	    $sHtml .= '<input type="hidden" name ="transaction_id" value="'.$sTransactionId.'"/>';
+
+		$sHtml .= $oAppContext->GetForForm();
         $sHtml .= "</form>\n";
 		$sHtml .= "</div>\n";
         if (!isset($aExtraParams['currentId']))
