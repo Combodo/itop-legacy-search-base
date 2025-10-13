@@ -63,7 +63,6 @@ class LegacySearchBlock
         }
 
         $oPage->LinkScriptFromModule('/itop-legacy-search-base/js/legacy-search.js');
-	    $oPage->add_saas('env-'.utils::GetCurrentEnvironment().'/itop-legacy-search-base/css/legacy-search.scss');
 
         $sStyle = (isset($this->aExtraParams['open']) && ($this->aExtraParams['open'] == 'true')) ? ' ibo-is-opened' : '';
         $sHtml = "<div id=\"ds_$sId\" class=\" ibo-panel ibo-content-block ibo-block ibo-search-form-panel display_block ibo-is-cyan ibo-is-opened $sStyle\">\n";

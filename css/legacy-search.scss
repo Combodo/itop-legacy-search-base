@@ -22,8 +22,8 @@
 .SearchDrawer {
   position: relative;
   padding: 32px 16px 24px 16px;
-  background-color: white;
-  border: solid 1px #ccd4db;
+  background-color: $ibo-panel--body--background-color;
+  border: solid 1px $ibo-panel--base-border-color;
   border-radius: 5px;
   &::before{
     position: absolute;
@@ -109,3 +109,11 @@ display: inline-flex !important;
 .field_select_wrapper button.ui-multiselect{
   padding-right: 25px !important;
 }
+
+.ui-dialog-titlebar.ui-corner-all.ui-multiselect-header.ui-helper-clearfix{
+  background-color: $ibo-panel--body--background-color;
+  a {
+    color: $ibo-body-text-color;
+  }
+}
+//.ui-dialog-titlebar.ui-multiselect-header a, .ui-dialog-titlebar.ui-multiselect-header .ibo-quick-create--compartment-results--element>.option:hover
